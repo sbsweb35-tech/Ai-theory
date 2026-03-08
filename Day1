@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>심화 학습: LLM과 토큰의 마법</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            height: 300px;
+        }
+        .concept-card { transition: all 0.3s ease; }
+        .concept-card:hover { transform: translateY(-5px); border-color: #0d9488; }
+        .token-block {
+            display: inline-block;
+            padding: 2px 8px;
+            margin: 2px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: bold;
+            color: white;
+        }
+        .fade-in { animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased">
+
+<!-- Chosen Palette: Slate & Deep Teal (bg-stone-50, text-stone-800, teal-700) -->
+<!-- Application Structure Plan: A 60-minute deep-dive theory module. 1. Visual Anchor (AI Image). 2. Module 1: Tokenization (Interactive converter). 3. Module 2: Probability (Chart.js simulation). 4. Module 3: Attention (Relationship map). 5. Summary Quiz. -->
+<!-- Visualization & Content Choices: 1. AI Image -> Educational Concept -> Hero Placement. 2. Next Word Probabilities -> Compare -> Bar Chart -> Chart.js. 3. Attention Map -> Organize -> Grid of weights -> Tailwind. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <nav class="bg-white border-b border-stone-200 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="font-bold text-lg text-teal-800 flex items-center">
+                    <span class="mr-2">🧠</span> Day 1 Deep Dive: Theory
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-xs font-bold text-stone-400">SESSION: 60 MIN</span>
+                    <div class="w-24 bg-stone-200 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-teal-600 h-full w-1/3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        <!-- Hero: The Visual Concept -->
+        <section class="mb-16 fade-in text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-stone-900 mb-6 tracking-tight">AI의 뇌 속으로: LLM은 어떻게 생각하는가?</h1>
+            <div class="max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-2xl border-8 border-white bg-white">
+                <img src="http://googleusercontent.com/image_generation_content/1" alt="LLM Theory Infographic" class="w-full h-auto">
+                <div class="p-6 bg-stone-900 text-teal-100 text-sm italic">
+                    "문장은 조각나고(Tokens), 확률로 계산되며(Probability), 관계를 통해 의미를 찾습니다(Attention)."
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+            
+            <!-- Module 1: Tokenization -->
+            <div class="concept-card bg-white p-8 rounded-3xl border border-stone-200 shadow-sm flex flex-col">
+                <div class="mb-6">
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-widest bg-teal-50 px-2 py-1 rounded">20 Minutes</span>
+                    <h3 class="text-xl font-bold mt-3">1. 토큰화 (Tokenization)</h3>
+                    <p class="text-sm text-stone-500 mt-2 leading-relaxed">
+                        AI는 '단어'가 아닌 '토큰' 단위로 읽습니다. 한국어는 형태소 단위로 쪼개지는 특성이 있습니다.
+                    </p>
+                </div>
+                <div class="flex-grow bg-stone-50 p-5 rounded-2xl border border-stone-100">
+                    <p class="text-xs font-bold text-stone-400 mb-3 uppercase">토큰화 시뮬레이터</p>
+                    <div class="text-stone-800 text-sm mb-4" id="token-preview">
+                        안녕하세요 제미나이입니다.
+                    </div>
+                    <div id="token-output" class="flex flex-wrap">
+                        <!-- Tokens will appear here -->
+                    </div>
+                    <button onclick="tokenizeText()" class="mt-4 w-full bg-stone-900 text-white py-2 rounded-xl text-xs font-bold hover:bg-stone-800 transition-colors">텍스트 쪼개기 실습</button>
+                </div>
+            </div>
+
+            <!-- Module 2: Probabilistic Approach -->
+            <div class="concept-card bg-white p-8 rounded-3xl border border-stone-200 shadow-sm flex flex-col">
+                <div class="mb-6">
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-widest bg-teal-50 px-2 py-1 rounded">20 Minutes</span>
+                    <h3 class="text-xl font-bold mt-3">2. 확률론적 예측</h3>
+                    <p class="text-sm text-stone-500 mt-2 leading-relaxed">
+                        AI는 문장을 이해하는 것이 아니라, 다음에 올 가장 확률 높은 조각을 '선택'합니다.
+                    </p>
+                </div>
+                <div class="flex-grow">
+                    <p class="text-xs font-bold text-stone-400 mb-3 uppercase">다음 토큰 확률 분포</p>
+                    <div class="chart-container">
+                        <canvas id="probChart"></canvas>
+                    </div>
+                    <p class="text-[10px] text-center text-stone-400 mt-2">"사과는 정말 맛있..." 뒤에 올 단어 예측</p>
+                </div>
+            </div>
+
+            <!-- Module 3: Attention Mechanism -->
+            <div class="concept-card bg-white p-8 rounded-3xl border border-stone-200 shadow-sm flex flex-col">
+                <div class="mb-6">
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-widest bg-teal-50 px-2 py-1 rounded">20 Minutes</span>
+                    <h3 class="text-xl font-bold mt-3">3. 주의 메커니즘 (Attention)</h3>
+                    <p class="text-sm text-stone-500 mt-2 leading-relaxed">
+                        문장 내에서 어떤 단어가 서로 밀접한 관계인지 '가중치'를 두어 파악합니다.
+                    </p>
+                </div>
+                <div class="flex-grow bg-teal-900 rounded-2xl p-5 text-white">
+                    <p class="text-[10px] font-bold text-teal-300 mb-4 uppercase">관계 가중치 맵 (Self-Attention)</p>
+                    <div class="grid grid-cols-4 gap-2 text-[10px] font-mono">
+                        <div class="opacity-30">AI</div> <div class="opacity-10">는</div> <div class="opacity-10">참</div> <div class="opacity-10">...</div>
+                        <div class="bg-teal-600/50 p-1">똑똑</div> <div class="bg-teal-400/80 p-1">합니다</div> <div class="opacity-20">.</div> <div class="opacity-10">...</div>
+                        <div class="opacity-20">...</div> <div class="opacity-10">...</div> <div class="opacity-10">...</div> <div class="opacity-10">...</div>
+                    </div>
+                    <div class="mt-4 border-t border-teal-800 pt-4">
+                        <p class="text-[10px] leading-relaxed">
+                            <span class="font-bold text-teal-400">TIP:</span> 'AI'와 '똑똑합니다' 사이의 높은 가중치가 전체 문장의 의미를 결정합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Summary & Self-Check -->
+        <section class="bg-white rounded-3xl p-10 border border-stone-100 shadow-xl max-w-4xl mx-auto">
+            <h3 class="text-2xl font-bold text-stone-900 mb-8 text-center">오늘의 이론 핵심 요약</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <span class="text-teal-600 mr-3">✔</span>
+                        <p class="text-sm font-medium">AI는 글자를 숫자로 바꾼 뒤 쪼개어 처리한다.</p>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-teal-600 mr-3">✔</span>
+                        <p class="text-sm font-medium">모든 답변은 고도의 수학적 확률 계산의 결과다.</p>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <span class="text-teal-600 mr-3">✔</span>
+                        <p class="text-sm font-medium">Attention을 통해 문맥과 관계를 파악한다.</p>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-teal-600 mr-3">✔</span>
+                        <p class="text-sm font-medium">우리의 질문(Prompt)은 AI의 확률 범위를 좁히는 도구다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Module 1: Tokenizer Simulation
+        const tokenColors = ['#0d9488', '#0f766e', '#115e59', '#134e4a', '#022c22'];
+        function tokenizeText() {
+            const output = document.getElementById('token-output');
+            const text = "안녕하세요 제미나이입니다.";
+            const tokens = ["안녕", "하세요", " ", "제미", "나이", "입니다", "."];
+            
+            output.innerHTML = '';
+            tokens.forEach((t, i) => {
+                const span = document.createElement('span');
+                span.className = 'token-block fade-in';
+                span.style.backgroundColor = tokenColors[i % tokenColors.length];
+                span.style.animationDelay = `${i * 0.1}s`;
+                span.innerText = t === " " ? "_" : t;
+                output.appendChild(span);
+            });
+        }
+
+        // Module 2: Probability Chart
+        function initChart() {
+            const ctx = document.getElementById('probChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['다', '어요', '습니다', '네', '죠'],
+                    datasets: [{
+                        label: '다음 토큰 확률 (%)',
+                        data: [45, 25, 18, 7, 5],
+                        backgroundColor: (context) => {
+                            const index = context.dataIndex;
+                            return index === 0 ? '#0d9488' : '#e7e5e4';
+                        },
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { display: false, min: 0, max: 50 },
+                        x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } }
+                    }
+                }
+            });
+        }
+
+        window.onload = () => {
+            initChart();
+            // Start with a default state
+            tokenizeText();
+        };
+    </script>
+</body>
+</html>
